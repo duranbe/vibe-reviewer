@@ -117,7 +117,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
 
 def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
     """Send the diff content to Mistral API for review."""
-    import requests
+    from mistralai import Mistral
     import os
 
     api_key = os.environ.get("MISTRAL_API_KEY", "")
@@ -147,32 +147,20 @@ def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
         },
     ]
 
-    # Call Mistral API
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
-
-    data = {
-        "model": "mistral-small-latest",
-        "messages": messages,
-        "stream": False,
-    }
-
+    # Call Mistral API using the official client
     try:
-        response = requests.post(
-            "https://api.mistral.ai/v1/chat/completions",
-            headers=headers,
-            json=data,
-            timeout=30,
-        )
+        with Mistral(api_key=api_key) as mistral:
+            res = mistral.chat.complete(
+                model="mistral-small-latest",
+                messages=messages,
+                stream=False,
+            )
 
-        if response.status_code == 200:
-            result = response.json()
-            return result.get("choices", [{}])[0].get("message", {}).get("content", "")
-        else:
-            print(f"DEBUG: Mistral API error: {response.status_code} - {response.text}")
-            return f"API error: {response.status_code}"
+            # Extract the content from the response
+            if hasattr(res, "choices") and len(res.choices) > 0:
+                return res.choices[0].message.content
+            else:
+                return str(res)
 
     except Exception as e:
         print(f"DEBUG: Mistral API exception: {e}")
