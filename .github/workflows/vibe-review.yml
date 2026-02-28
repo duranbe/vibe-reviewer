@@ -41,6 +41,12 @@ jobs:
             const totalDeletions = "${{ steps.vibe-review.outputs.total-deletions }}";
             const hasTests = "${{ steps.vibe-review.outputs.has-tests }}";
             
+            const commentBody = "🎯 Vibe Review: **" + riskLevel + "** risk\n\n" +
+                "- Files changed: " + filesChanged + "\n" +
+                "- Lines added: " + totalAdditions + "\n" +
+                "- Lines deleted: " + totalDeletions + "\n" +
+                "- Tests included: " + hasTests;
+            
             const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -48,16 +54,6 @@ jobs:
             });
             
             const botComment = comments.find(c => c.user.login === 'github-actions[bot]' && c.body.includes('🎯 Vibe Review'));
-            const commentBody = `🎯 Vibe Review: **${riskLevel}** risk
-
-` +
-                `- Files changed: ${filesChanged}
-` +
-                `- Lines added: ${totalAdditions}
-` +
-                `- Lines deleted: ${totalDeletions}
-` +
-                `- Tests included: ${hasTests}`;
             
             if (botComment) {
               await github.rest.issues.updateComment({
