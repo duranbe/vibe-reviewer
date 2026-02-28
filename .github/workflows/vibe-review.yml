@@ -1,7 +1,9 @@
 name: Vibe Review
 
-on: [push, pull_request]
-
+on:
+  pull_request:
+    branches: ['main']
+    types: [opened, synchronize, reopened]
 
 jobs:
   analyze:
@@ -10,7 +12,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Required for full git history
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Run Vibe Reviewer
         uses: duranbe/vibe-reviewer@v0.0.3
