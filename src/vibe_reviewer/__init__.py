@@ -41,7 +41,21 @@ def analyze_pr_diff() -> Dict[str, Any]:
         print(f"DEBUG: Git diff output: {diff_result.stdout}")
     except subprocess.CalledProcessError as e:
         print(f"DEBUG: Failed to get git diff: {e}")
-        return {"error": f"Failed to get git diff: {e}"}
+        print(f"DEBUG: Git stderr: {e.stderr}")
+
+        # Try using HEAD~1 if direct SHA comparison fails
+        print("DEBUG: Trying alternative approach with HEAD~1")
+        try:
+            diff_result = subprocess.run(
+                ["git", "diff", "--numstat", "HEAD~1", "HEAD"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            print(f"DEBUG: Alternative git diff output: {diff_result.stdout}")
+        except subprocess.CalledProcessError as e2:
+            print(f"DEBUG: Alternative approach also failed: {e2}")
+            return {"error": f"Failed to get git diff: {e}"}
 
     # Parse diff output
     lines = diff_result.stdout.strip().split("\n")
