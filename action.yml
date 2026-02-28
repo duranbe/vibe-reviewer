@@ -1,4 +1,4 @@
-name: 'PR Diff Analyzer'
+name: 'Vibe Reviewer'
 description: 'Analyses a PR diff using git and the event payload — zero API calls'
 author: 'Mistral Vibe'
 

@@ -1,4 +1,4 @@
-"""PR Diff Analyzer for GitHub Actions."""
+"""Vibe Reviewer for GitHub Actions."""
 
 import json
 import os
