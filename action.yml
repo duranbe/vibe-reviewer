@@ -1,0 +1,23 @@
+name: 'PR Diff Analyzer'
+description: 'Analyses a PR diff using git and the event payload — zero API calls'
+author: 'Mistral Vibe'
+
+branding:
+  icon: 'search'
+  color: 'blue'
+
+outputs:
+  risk-level:
+    description: 'Risk level: LOW, MEDIUM, or HIGH'
+  files-changed:
+    description: 'Number of files changed'
+  has-tests:
+    description: 'Whether test files were detected (true/false)'
+  total-additions:
+    description: 'Total lines added'
+  total-deletions:
+    description: 'Total lines deleted'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

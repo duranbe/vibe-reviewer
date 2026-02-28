@@ -19,3 +19,10 @@ jobs:
         run: pytest tests/
       - name: Run linters
         run: black --check . && ruff check .
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t vibe-reviewer .
