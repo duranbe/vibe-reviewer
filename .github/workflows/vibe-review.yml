@@ -44,31 +44,13 @@ jobs:
                 comment_id: botComment.id,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `🎯 Vibe Review: **${{ steps.vibe-review.outputs.risk-level }}** risk
-
-` +
-                      `- Files changed: ${{ steps.vibe-review.outputs.files-changed }}
-` +
-                      `- Lines added: ${{ steps.vibe-review.outputs.total-additions }}
-` +
-                      `- Lines deleted: ${{ steps.vibe-review.outputs.total-deletions }}
-` +
-                      `- Tests included: ${{ steps.vibe-review.outputs.has-tests }}`
+                body: `🎯 Vibe Review: **${{ steps.vibe-review.outputs.risk-level }}** risk`
               });
             } else {
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `🎯 Vibe Review: **${{ steps.vibe-review.outputs.risk-level }}** risk
-
-` +
-                      `- Files changed: ${{ steps.vibe-review.outputs.files-changed }}
-` +
-                      `- Lines added: ${{ steps.vibe-review.outputs.total-additions }}
-` +
-                      `- Lines deleted: ${{ steps.vibe-review.outputs.total-deletions }}
-` +
-                      `- Tests included: ${{ steps.vibe-review.outputs.has-tests }}`
+                body: `🎯 Vibe Review: **${{ steps.vibe-review.outputs.risk-level }}** risk`
               });
             }
