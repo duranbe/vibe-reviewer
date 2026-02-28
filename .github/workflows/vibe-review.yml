@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0  # Required for full git history
 
       - name: Run Vibe Reviewer
-        uses: duranbe/vibe-reviewer@v0.0.3
+        uses: duranbe/vibe-reviewer@v0.0.4
         id: vibe-review
 
       - name: Show Results
