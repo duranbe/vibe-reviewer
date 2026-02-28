@@ -1,0 +1,73 @@
+name: Vibe Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for full git history
+
+      - name: Run Vibe Reviewer
+        uses: ./
+        id: vibe-review
+
+      - name: Show Results
+        run: |
+          echo "🎯 Vibe Review Results:"
+          echo "Risk Level: ${{ steps.vibe-review.outputs.risk-level }}"
+          echo "Files Changed: ${{ steps.vibe-review.outputs.files-changed }}"
+          echo "Has Tests: ${{ steps.vibe-review.outputs.has-tests }}"
+          echo "Total Additions: ${{ steps.vibe-review.outputs.total-additions }}"
+          echo "Total Deletions: ${{ steps.vibe-review.outputs.total-deletions }}"
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            
+            const botComment = comments.find(c => c.user.login === 'github-actions[bot]' && c.body.includes('🎯 Vibe Review'));
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🎯 Vibe Review: **${{ steps.vibe-review.outputs.risk-level }}** risk
+
+` +
+                      `- Files changed: ${{ steps.vibe-review.outputs.files-changed }}
+` +
+                      `- Lines added: ${{ steps.vibe-review.outputs.total-additions }}
+` +
+                      `- Lines deleted: ${{ steps.vibe-review.outputs.total-deletions }}
+` +
+                      `- Tests included: ${{ steps.vibe-review.outputs.has-tests }}`
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🎯 Vibe Review: **${{ steps.vibe-review.outputs.risk-level }}** risk
+
+` +
+                      `- Files changed: ${{ steps.vibe-review.outputs.files-changed }}
+` +
+                      `- Lines added: ${{ steps.vibe-review.outputs.total-additions }}
+` +
+                      `- Lines deleted: ${{ steps.vibe-review.outputs.total-deletions }}
+` +
+                      `- Tests included: ${{ steps.vibe-review.outputs.has-tests }}`
+              });
+            }
