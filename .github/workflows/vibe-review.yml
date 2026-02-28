@@ -42,7 +42,7 @@ jobs:
             const totalAdditions = "${{ steps.vibe-review.outputs.total-additions }}";
             const totalDeletions = "${{ steps.vibe-review.outputs.total-deletions }}";
             const hasTests = "${{ steps.vibe-review.outputs.has-tests }}";
-            const message = `${{ steps.vibe-review.outputs.message }}`;
+            const message = "${{ steps.vibe-review.outputs.message }}";
             
             let commentBody = "🎯 Vibe Review: **" + riskLevel + "** risk\n\n" +
                 "- Files changed: " + filesChanged + "\n" +
