@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Vibe Reviewer
-        uses: duranbe/vibe-reviewer@v0.0.9
+        uses: duranbe/vibe-reviewer@v0.0.10
         id: vibe-review
 
       - name: Show Results
