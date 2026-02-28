@@ -8,6 +8,12 @@ from typing import Dict, Any
 
 def analyze_pr_diff() -> Dict[str, Any]:
     """Analyze the PR diff and return metrics."""
+    # Configure git to trust the workspace directory
+    subprocess.run(
+        ["git", "config", "--global", "--add", "safe.directory", "*"],
+        capture_output=True,
+    )
+
     # Get the event payload from GitHub Actions
     event_path = os.environ.get("GITHUB_EVENT_PATH", "")
     if not event_path:
@@ -29,11 +35,12 @@ def analyze_pr_diff() -> Dict[str, Any]:
         print("DEBUG: Could not determine base or head SHA")
         return {"error": "Could not determine base or head SHA"}
 
-    # Get git diff
+    # Alternative approach: use git diff with HEAD and the base SHA
+    # This works better in the GitHub Actions environment
     try:
-        print(f"DEBUG: Running git diff between {base_sha} and {head_sha}")
+        print(f"DEBUG: Running git diff HEAD {base_sha}")
         diff_result = subprocess.run(
-            ["git", "diff", "--numstat", base_sha, head_sha],
+            ["git", "diff", "--numstat", base_sha, "HEAD"],
             capture_output=True,
             text=True,
             check=True,
@@ -43,80 +50,34 @@ def analyze_pr_diff() -> Dict[str, Any]:
         print(f"DEBUG: Failed to get git diff: {e}")
         print(f"DEBUG: Git stderr: {e.stderr}")
 
-        # Debug git status
-        print("DEBUG: Checking git status")
-        status_result = subprocess.run(
-            ["git", "status"],
-            capture_output=True,
-            text=True,
-        )
-        print(f"DEBUG: Git status: {status_result.stdout}")
-        print(f"DEBUG: Git status stderr: {status_result.stderr}")
-
-        # Check if commits exist
-        print(f"DEBUG: Checking if base commit {base_sha} exists")
-        base_check = subprocess.run(
-            ["git", "cat-file", "-e", base_sha],
-            capture_output=True,
-            text=True,
-        )
-        print(f"DEBUG: Base commit exists: {base_check.returncode == 0}")
-
-        print(f"DEBUG: Checking if head commit {head_sha} exists")
-        head_check = subprocess.run(
-            ["git", "cat-file", "-e", head_sha],
-            capture_output=True,
-            text=True,
-        )
-        print(f"DEBUG: Head commit exists: {head_check.returncode == 0}")
-
-        # Try using HEAD~1 if direct SHA comparison fails
-        print("DEBUG: Trying alternative approach with HEAD~1")
+        # Try using git log to get the diff
+        print("DEBUG: Trying git log approach")
         try:
             diff_result = subprocess.run(
-                ["git", "diff", "--numstat", "HEAD~1", "HEAD"],
+                ["git", "log", "--oneline", "--numstat", f"{base_sha}..HEAD"],
                 capture_output=True,
                 text=True,
                 check=True,
             )
-            print(f"DEBUG: Alternative git diff output: {diff_result.stdout}")
+            print(f"DEBUG: Git log output: {diff_result.stdout}")
         except subprocess.CalledProcessError as e2:
-            print(f"DEBUG: Alternative approach also failed: {e2}")
-
-            # Try fetching the commits
-            print("DEBUG: Trying to fetch commits")
-            try:
-                fetch_result = subprocess.run(
-                    ["git", "fetch", "--unshallow"],
-                    capture_output=True,
-                    text=True,
-                )
-                print(f"DEBUG: Fetch result: {fetch_result.returncode}")
-                print(f"DEBUG: Fetch stdout: {fetch_result.stdout}")
-                print(f"DEBUG: Fetch stderr: {fetch_result.stderr}")
-
-                # Try the diff again
-                diff_result = subprocess.run(
-                    ["git", "diff", "--numstat", base_sha, head_sha],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                print(f"DEBUG: Git diff output after fetch: {diff_result.stdout}")
-            except subprocess.CalledProcessError as e3:
-                print(f"DEBUG: Failed after fetch: {e3}")
-                return {"error": f"Failed to get git diff: {e}"}
+            print(f"DEBUG: Git log also failed: {e2}")
+            return {"error": f"Failed to get git diff: {e}"}
 
     # Parse diff output
     lines = diff_result.stdout.strip().split("\n")
     total_additions = 0
     total_deletions = 0
-    files_changed = len(lines)
+    files_changed = 0
     has_tests = False
 
-    print(f"DEBUG: Found {files_changed} files changed")
-
+    # Skip the first line if it's a commit hash from git log
     for line in lines:
+        if line.startswith("commit "):
+            continue
+        if line.strip() == "":
+            continue
+
         parts = line.split("\t")
         if len(parts) >= 3:
             additions = int(parts[0]) if parts[0] != "-" else 0
@@ -125,10 +86,12 @@ def analyze_pr_diff() -> Dict[str, Any]:
 
             total_additions += additions
             total_deletions += deletions
+            files_changed += 1
 
             if "test" in file_path.lower():
                 has_tests = True
 
+    print(f"DEBUG: Found {files_changed} files changed")
     print(f"DEBUG: Total additions: {total_additions}")
     print(f"DEBUG: Total deletions: {total_deletions}")
     print(f"DEBUG: Has tests: {has_tests}")
