@@ -153,7 +153,9 @@ def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
             ),
         ]
 
-        response = client.chat.complete(model="mistral-large-latest", messages=messages)
+        response = client.chat.complete(
+            model="devstral-small-latest", messages=messages
+        )
 
         # Log the full response for debugging
         print(f"DEBUG: Mistral API response: {response}")
