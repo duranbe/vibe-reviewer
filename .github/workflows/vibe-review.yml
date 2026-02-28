@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Vibe Reviewer
-        uses: duranbe/vibe-reviewer@v0.0.19
+        uses: duranbe/vibe-reviewer@v0.0.20
         id: vibe-review
         env:
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
