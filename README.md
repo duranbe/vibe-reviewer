@@ -1,4 +1,4 @@
 # vibe-reviewer
 Mistral-Based AI Code Reviewer
 
-Mistral Hackathon 2026
+Online Mistral Hackathon 2026
