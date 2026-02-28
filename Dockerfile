@@ -1,8 +1,8 @@
 # Use the official Python image
 FROM python:3.11-slim
 
-# Set the working directory
-WORKDIR /app
+# Set the working directory to the GitHub workspace
+WORKDIR /github/workspace
 
 # Install git (required for git diff operations)
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
