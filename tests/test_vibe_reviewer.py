@@ -19,19 +19,23 @@ def test_analyze_pr_diff():
     # Mock git diff output
     mock_diff = "10\t5\tsrc/file1.py\n20\t10\ttests/test_file1.py\n"
 
-    with patch("builtins.open", mock_open(read_data=mock_diff)):
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value.stdout = mock_diff
-            mock_run.return_value.check_returncode.return_value = None
+    # Mock both file opening and json.load
+    with patch("builtins.open", mock_open(read_data='{}')) as mock_file:
+        with patch("json.load") as mock_json_load:
+            mock_json_load.return_value = mock_event
+            
+            with patch("subprocess.run") as mock_run:
+                mock_run.return_value.stdout = mock_diff
+                mock_run.return_value.check_returncode.return_value = None
 
-            with patch.dict(os.environ, {"GITHUB_EVENT_PATH": "mock_path"}):
-                result = analyze_pr_diff()
+                with patch.dict(os.environ, {"GITHUB_EVENT_PATH": "mock_path"}):
+                    result = analyze_pr_diff()
 
-                assert result["risk-level"] == "LOW"
-                assert result["files-changed"] == 2
-                assert result["has-tests"] == "true"
-                assert result["total-additions"] == 30
-                assert result["total-deletions"] == 15
+                    assert result["risk-level"] == "LOW"
+                    assert result["files-changed"] == 2
+                    assert result["has-tests"] == "true"
+                    assert result["total-additions"] == 30
+                    assert result["total-deletions"] == 15
 
 
 def test_set_outputs():
