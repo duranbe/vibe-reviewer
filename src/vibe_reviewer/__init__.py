@@ -183,7 +183,13 @@ def set_outputs(outputs: Dict[str, Any]) -> None:
 
     with open(github_output, "a") as f:
         for key, value in outputs.items():
-            f.write(f"{key}={value}\n")
+            # Handle multiline values by using GitHub's multiline syntax
+            if isinstance(value, str) and ("\n" in value or "\r" in value):
+                # Escape newlines and use the multiline delimiter
+                escaped_value = value.replace("\n", "%0A").replace("\r", "%0D")
+                f.write(f"{key}<<EOF\n{escaped_value}\nEOF\n")
+            else:
+                f.write(f"{key}={value}\n")
     print("DEBUG: Outputs written successfully")
 
 

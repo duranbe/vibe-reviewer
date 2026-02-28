@@ -17,6 +17,8 @@ outputs:
     description: 'Total lines added'
   total-deletions:
     description: 'Total lines deleted'
+  message:
+    description: 'Mistral AI review message (only present when MISTRAL_API_KEY is provided)'
 
 runs:
   using: 'docker'
