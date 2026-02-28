@@ -1,0 +1,18 @@
+[project]
+name = "vibe-reviewer"
+version = "0.1.0"
+description = "A simple Python project for GitHub Actions"
+authors = [{name = "Mistral Vibe", email = "vibe@mistral.ai"}]
+dependencies = []
+requires-python = ">=3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.0.261",
+]
