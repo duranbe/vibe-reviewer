@@ -7,7 +7,6 @@ from vibe_reviewer import analyze_pr_diff, set_outputs
 
 def test_analyze_pr_diff():
     """Test the analyze_pr_diff function."""
-    # Mock the event payload
     mock_event = {
         "number": 1,
         "pull_request": {
@@ -16,10 +15,10 @@ def test_analyze_pr_diff():
         },
     }
 
-    # Mock git diff output
+
     mock_diff = "10\t5\tsrc/file1.py\n20\t10\ttests/test_file1.py\n"
 
-    # Mock both file opening and json.load
+
     with patch("builtins.open", mock_open(read_data="{}")):
         with patch("json.load") as mock_json_load:
             mock_json_load.return_value = mock_event
