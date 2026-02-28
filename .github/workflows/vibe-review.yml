@@ -42,7 +42,7 @@ jobs:
             const totalAdditions = "${{ steps.vibe-review.outputs.total-additions }}";
             const totalDeletions = "${{ steps.vibe-review.outputs.total-deletions }}";
             const hasTests = "${{ steps.vibe-review.outputs.has-tests }}";
-            const message = "${{ steps.vibe-review.outputs.message }}";
+            const message = `${{ steps.vibe-review.outputs.message }}`;
             
             let commentBody = "🎯 Vibe Review: **" + riskLevel + "** risk\n\n" +
                 "- Files changed: " + filesChanged + "\n" +
@@ -52,7 +52,9 @@ jobs:
             
             // Add Mistral AI review message if available
             if (message) {
-                commentBody += "\n\n🤖 **AI Review:**\n\n" + message;
+                // Decode the escaped newlines back to actual newlines
+                const decodedMessage = message.replace(/%0A/g, '\n').replace(/%0D/g, '\r');
+                commentBody += "\n\n🤖 **AI Review:**\n\n" + decodedMessage;
             }
             
             const { data: comments } = await github.rest.issues.listComments({
