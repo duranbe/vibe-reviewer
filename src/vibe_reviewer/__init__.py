@@ -117,7 +117,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
 
 def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
     """Send the diff content to Mistral API for review."""
-    from mistralai import Mistral
+    from mistralai.client import MistralClient
     import os
 
     api_key = os.environ.get("MISTRAL_API_KEY", "")
@@ -149,18 +149,18 @@ def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
 
     # Call Mistral API using the official client
     try:
-        with Mistral(api_key=api_key) as mistral:
-            res = mistral.chat.complete(
-                model="mistral-small-latest",
-                messages=messages,
-                stream=False,
-            )
+        client = MistralClient(api_key=api_key)
+        res = client.chat.complete(
+            model="mistral-small-latest",
+            messages=messages,
+            stream=False,
+        )
 
-            # Extract the content from the response
-            if hasattr(res, "choices") and len(res.choices) > 0:
-                return res.choices[0].message.content
-            else:
-                return str(res)
+        # Extract the content from the response
+        if hasattr(res, "choices") and len(res.choices) > 0:
+            return res.choices[0].message.content
+        else:
+            return str(res)
 
     except Exception as e:
         print(f"DEBUG: Mistral API exception: {e}")
