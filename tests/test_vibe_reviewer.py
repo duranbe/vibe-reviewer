@@ -20,7 +20,7 @@ def test_analyze_pr_diff():
     mock_diff = "10\t5\tsrc/file1.py\n20\t10\ttests/test_file1.py\n"
 
     # Mock both file opening and json.load
-    with patch("builtins.open", mock_open(read_data='{}')) as mock_file:
+    with patch("builtins.open", mock_open(read_data='{}')):
         with patch("json.load") as mock_json_load:
             mock_json_load.return_value = mock_event
             

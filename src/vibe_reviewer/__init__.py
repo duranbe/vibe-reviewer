@@ -17,7 +17,6 @@ def analyze_pr_diff() -> Dict[str, Any]:
         event = json.load(f)
 
     # Extract PR details
-    pr_number = event.get("number", 1)
     base_sha = event.get("pull_request", {}).get("base", {}).get("sha", "")
     head_sha = event.get("pull_request", {}).get("head", {}).get("sha", "")
 
