@@ -117,7 +117,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
 
 def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
     """Send the diff content to Mistral API for review."""
-    from mistralai.client import MistralClient
+    from mistralai import Mistral, UserMessage, SystemMessage
     import os
 
     api_key = os.environ.get("MISTRAL_API_KEY", "")
@@ -135,32 +135,26 @@ def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
             "You are a code reviewer. Please review the following code changes."
         )
 
-    # Prepare the messages
-    messages = [
-        {
-            "content": system_prompt,
-            "role": "system",
-        },
-        {
-            "content": f"## Code Changes\n\nRisk Level: {risk_level}\n\n```diff\n{diff_content}\n```",
-            "role": "user",
-        },
-    ]
-
-    # Call Mistral API using the official client
+    # Call Mistral API using the new v1 client
     try:
-        client = MistralClient(api_key=api_key)
-        res = client.chat.complete(
-            model="mistral-small-latest",
-            messages=messages,
-            stream=False,
-        )
+        client = Mistral(api_key=api_key)
+        
+        # Prepare the messages using the new message classes
+        messages = [
+            SystemMessage(content=system_prompt),
+            UserMessage(content=f"## Code Changes\n\nRisk Level: {risk_level}\n\n```diff\n{diff_content}\n```")
+        ]
+
+        response = client.chat.complete(model="mistral-large-latest", messages=messages)
+
+        # Log the full response for debugging
+        print(f"DEBUG: Mistral API response: {response}")
 
         # Extract the content from the response
-        if hasattr(res, "choices") and len(res.choices) > 0:
-            return res.choices[0].message.content
+        if hasattr(response, "choices") and len(response.choices) > 0:
+            return response.choices[0].message.content
         else:
-            return str(res)
+            return str(response)
 
     except Exception as e:
         print(f"DEBUG: Mistral API exception: {e}")
