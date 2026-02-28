@@ -138,11 +138,13 @@ def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
     # Call Mistral API using the new v1 client
     try:
         client = Mistral(api_key=api_key)
-        
+
         # Prepare the messages using the new message classes
         messages = [
             SystemMessage(content=system_prompt),
-            UserMessage(content=f"## Code Changes\n\nRisk Level: {risk_level}\n\n```diff\n{diff_content}\n```")
+            UserMessage(
+                content=f"## Code Changes\n\nRisk Level: {risk_level}\n\n```diff\n{diff_content}\n```"
+            ),
         ]
 
         response = client.chat.complete(model="mistral-large-latest", messages=messages)
