@@ -89,6 +89,23 @@ def analyze_pr_diff() -> Dict[str, Any]:
 
     print(f"DEBUG: Risk level determined: {risk_level}")
 
+    # Get the actual diff content for Mistral API
+    try:
+        diff_content = subprocess.run(
+            ["git", "diff", base_sha, "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+
+        # Send to Mistral API if API key is available
+        if os.environ.get("MISTRAL_API_KEY"):
+            print("DEBUG: Sending diff to Mistral API for review")
+            mistral_review = send_to_mistral_api(diff_content, risk_level)
+            print(f"DEBUG: Mistral review: {mistral_review}")
+    except subprocess.CalledProcessError as e:
+        print(f"DEBUG: Failed to get full diff: {e}")
+
     return {
         "risk-level": risk_level,
         "files-changed": files_changed,
@@ -96,6 +113,70 @@ def analyze_pr_diff() -> Dict[str, Any]:
         "total-additions": total_additions,
         "total-deletions": total_deletions,
     }
+
+
+def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
+    """Send the diff content to Mistral API for review."""
+    import requests
+    import os
+
+    api_key = os.environ.get("MISTRAL_API_KEY", "")
+    if not api_key:
+        print("DEBUG: MISTRAL_API_KEY not set")
+        return "No API key provided"
+
+    # Load the system prompt
+    try:
+        with open("review.md", "r") as f:
+            system_prompt = f.read()
+    except FileNotFoundError:
+        print("DEBUG: review.md not found")
+        system_prompt = (
+            "You are a code reviewer. Please review the following code changes."
+        )
+
+    # Prepare the messages
+    messages = [
+        {
+            "content": system_prompt,
+            "role": "system",
+        },
+        {
+            "content": f"## Code Changes\n\nRisk Level: {risk_level}\n\n```diff\n{diff_content}\n```",
+            "role": "user",
+        },
+    ]
+
+    # Call Mistral API
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    data = {
+        "model": "mistral-small-latest",
+        "messages": messages,
+        "stream": False,
+    }
+
+    try:
+        response = requests.post(
+            "https://api.mistral.ai/v1/chat/completions",
+            headers=headers,
+            json=data,
+            timeout=30,
+        )
+
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("choices", [{}])[0].get("message", {}).get("content", "")
+        else:
+            print(f"DEBUG: Mistral API error: {response.status_code} - {response.text}")
+            return f"API error: {response.status_code}"
+
+    except Exception as e:
+        print(f"DEBUG: Mistral API exception: {e}")
+        return f"API exception: {str(e)}"
 
 
 def set_outputs(outputs: Dict[str, Any]) -> None:
