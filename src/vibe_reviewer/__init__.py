@@ -55,7 +55,29 @@ def analyze_pr_diff() -> Dict[str, Any]:
             print(f"DEBUG: Alternative git diff output: {diff_result.stdout}")
         except subprocess.CalledProcessError as e2:
             print(f"DEBUG: Alternative approach also failed: {e2}")
-            return {"error": f"Failed to get git diff: {e}"}
+
+            # Try fetching the commits
+            print("DEBUG: Trying to fetch commits")
+            try:
+                subprocess.run(
+                    ["git", "fetch", "--unshallow"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                print("DEBUG: Fetched commits successfully")
+
+                # Try the diff again
+                diff_result = subprocess.run(
+                    ["git", "diff", "--numstat", base_sha, head_sha],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                print(f"DEBUG: Git diff output after fetch: {diff_result.stdout}")
+            except subprocess.CalledProcessError as e3:
+                print(f"DEBUG: Failed after fetch: {e3}")
+                return {"error": f"Failed to get git diff: {e}"}
 
     # Parse diff output
     lines = diff_result.stdout.strip().split("\n")
