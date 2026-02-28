@@ -7,12 +7,11 @@ WORKDIR /app
 # Copy the project files
 COPY pyproject.toml ./
 COPY src/ ./src/
-COPY tests/ ./tests/
+COPY action.yml ./
 
 # Install the project and dependencies using uv
 RUN pip install uv && \
-    uv pip install --system --no-deps -e . && \
-    uv pip install --system pytest black ruff
+    uv pip install --system --no-deps -e .
 
-# Run tests by default
-CMD ["pytest", "tests/"]
+# Run the action by default
+CMD ["python", "-m", "vibe_reviewer"]
