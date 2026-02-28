@@ -43,6 +43,33 @@ def analyze_pr_diff() -> Dict[str, Any]:
         print(f"DEBUG: Failed to get git diff: {e}")
         print(f"DEBUG: Git stderr: {e.stderr}")
 
+        # Debug git status
+        print("DEBUG: Checking git status")
+        status_result = subprocess.run(
+            ["git", "status"],
+            capture_output=True,
+            text=True,
+        )
+        print(f"DEBUG: Git status: {status_result.stdout}")
+        print(f"DEBUG: Git status stderr: {status_result.stderr}")
+
+        # Check if commits exist
+        print(f"DEBUG: Checking if base commit {base_sha} exists")
+        base_check = subprocess.run(
+            ["git", "cat-file", "-e", base_sha],
+            capture_output=True,
+            text=True,
+        )
+        print(f"DEBUG: Base commit exists: {base_check.returncode == 0}")
+
+        print(f"DEBUG: Checking if head commit {head_sha} exists")
+        head_check = subprocess.run(
+            ["git", "cat-file", "-e", head_sha],
+            capture_output=True,
+            text=True,
+        )
+        print(f"DEBUG: Head commit exists: {head_check.returncode == 0}")
+
         # Try using HEAD~1 if direct SHA comparison fails
         print("DEBUG: Trying alternative approach with HEAD~1")
         try:
@@ -59,13 +86,14 @@ def analyze_pr_diff() -> Dict[str, Any]:
             # Try fetching the commits
             print("DEBUG: Trying to fetch commits")
             try:
-                subprocess.run(
+                fetch_result = subprocess.run(
                     ["git", "fetch", "--unshallow"],
                     capture_output=True,
                     text=True,
-                    check=True,
                 )
-                print("DEBUG: Fetched commits successfully")
+                print(f"DEBUG: Fetch result: {fetch_result.returncode}")
+                print(f"DEBUG: Fetch stdout: {fetch_result.stdout}")
+                print(f"DEBUG: Fetch stderr: {fetch_result.stderr}")
 
                 # Try the diff again
                 diff_result = subprocess.run(
