@@ -94,10 +94,10 @@ def set_outputs(outputs: Dict[str, Any]) -> None:
     if not github_output:
         print("DEBUG: GITHUB_OUTPUT not set, skipping output writing")
         return
-    
+
     print(f"DEBUG: Writing outputs to {github_output}")
     print(f"DEBUG: Outputs: {outputs}")
-    
+
     with open(github_output, "a") as f:
         for key, value in outputs.items():
             f.write(f"{key}={value}\n")
