@@ -39,6 +39,7 @@ def test_set_outputs():
     """Test the set_outputs function."""
     mock_outputs = {"key1": "value1", "key2": "value2"}
 
-    with patch("builtins.open", mock_open()) as mock_file:
-        set_outputs(mock_outputs)
-        mock_file.assert_called_once_with(os.environ.get("GITHUB_OUTPUT", ""), "a")
+    with patch.dict(os.environ, {"GITHUB_OUTPUT": "test_output"}):
+        with patch("builtins.open", mock_open()) as mock_file:
+            set_outputs(mock_outputs)
+            mock_file.assert_called_once_with("test_output", "a")

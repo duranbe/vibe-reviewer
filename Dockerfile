@@ -16,5 +16,8 @@ COPY action.yml ./
 RUN pip install uv && \
     uv pip install --system --no-deps -e .
 
+# Fetch full git history and checkout the correct ref
+RUN git config --global --add safe.directory /github/workspace
+
 # Run the action by default
 CMD ["python", "-m", "vibe_reviewer"]
