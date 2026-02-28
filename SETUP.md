@@ -19,11 +19,6 @@
 6. Paste your API key as the value
 7. Click "Add secret"
 
-### Method B: Using GitHub CLI
-
-```bash
-gh secret set MISTRAL_API_KEY --body "your-api-key-here"
-```
 
 ## Step 3: Verify the Setup
 
