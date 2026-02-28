@@ -54,7 +54,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
             if "test" in file_path.lower():
                 has_tests = True
 
-    # Determine risk level
+    # Determine risk level based on files changed, total lines added/deleted
     if files_changed <= 5 and total_additions + total_deletions <= 50:
         risk_level = "LOW"
     elif files_changed <= 15 and total_additions + total_deletions <= 200:
