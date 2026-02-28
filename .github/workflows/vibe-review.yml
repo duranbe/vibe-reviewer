@@ -42,12 +42,18 @@ jobs:
             const totalAdditions = "${{ steps.vibe-review.outputs.total-additions }}";
             const totalDeletions = "${{ steps.vibe-review.outputs.total-deletions }}";
             const hasTests = "${{ steps.vibe-review.outputs.has-tests }}";
+            const message = "${{ steps.vibe-review.outputs.message }}";
             
-            const commentBody = "🎯 Vibe Review: **" + riskLevel + "** risk\n\n" +
+            let commentBody = "🎯 Vibe Review: **" + riskLevel + "** risk\n\n" +
                 "- Files changed: " + filesChanged + "\n" +
                 "- Lines added: " + totalAdditions + "\n" +
                 "- Lines deleted: " + totalDeletions + "\n" +
                 "- Tests included: " + hasTests;
+            
+            // Add Mistral AI review message if available
+            if (message) {
+                commentBody += "\n\n🤖 **AI Review:**\n\n" + message;
+            }
             
             const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,

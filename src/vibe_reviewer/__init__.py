@@ -106,13 +106,19 @@ def analyze_pr_diff() -> Dict[str, Any]:
     except subprocess.CalledProcessError as e:
         print(f"DEBUG: Failed to get full diff: {e}")
 
-    return {
+    # Include the Mistral review message in outputs if available
+    outputs = {
         "risk-level": risk_level,
         "files-changed": files_changed,
         "has-tests": str(has_tests).lower(),
         "total-additions": total_additions,
         "total-deletions": total_deletions,
     }
+
+    if os.environ.get("MISTRAL_API_KEY"):
+        outputs["message"] = mistral_review
+
+    return outputs
 
 
 def send_to_mistral_api(diff_content: str, risk_level: str) -> str:
