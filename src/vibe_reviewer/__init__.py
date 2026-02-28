@@ -35,8 +35,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
         print("DEBUG: Could not determine base or head SHA")
         return {"error": "Could not determine base or head SHA"}
 
-    # Alternative approach: use git diff with HEAD and the base SHA
-    # This works better in the GitHub Actions environment
+    # Get git diff - use HEAD as the new commit and base_sha as the old
     try:
         print(f"DEBUG: Running git diff HEAD {base_sha}")
         diff_result = subprocess.run(
@@ -49,20 +48,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
     except subprocess.CalledProcessError as e:
         print(f"DEBUG: Failed to get git diff: {e}")
         print(f"DEBUG: Git stderr: {e.stderr}")
-
-        # Try using git log to get the diff
-        print("DEBUG: Trying git log approach")
-        try:
-            diff_result = subprocess.run(
-                ["git", "log", "--oneline", "--numstat", f"{base_sha}..HEAD"],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            print(f"DEBUG: Git log output: {diff_result.stdout}")
-        except subprocess.CalledProcessError as e2:
-            print(f"DEBUG: Git log also failed: {e2}")
-            return {"error": f"Failed to get git diff: {e}"}
+        return {"error": f"Failed to get git diff: {e}"}
 
     # Parse diff output
     lines = diff_result.stdout.strip().split("\n")
@@ -71,10 +57,7 @@ def analyze_pr_diff() -> Dict[str, Any]:
     files_changed = 0
     has_tests = False
 
-    # Skip the first line if it's a commit hash from git log
     for line in lines:
-        if line.startswith("commit "):
-            continue
         if line.strip() == "":
             continue
 
