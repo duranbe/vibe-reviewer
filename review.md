@@ -27,11 +27,6 @@ Provide your review in the following format:
 ## Summary
 Brief overview of the changes and overall assessment
 
-## Strengths
-- What's done well
-- Good practices followed
-- Notable improvements
-
 ## Issues
 ### Critical
 - Security vulnerabilities
