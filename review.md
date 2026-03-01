@@ -63,3 +63,5 @@ Be thorough, professional, and provide actionable feedback.
 
 For each sugggestions, minor or major fixes, suggest a fix and eventually to use mistral-vibe to fix. 
 Example : `vibe -p <PROMPT>`
+
+Use proper escaping to avoid issues when rendering markdown
