@@ -74,6 +74,7 @@ class PRAnalyzer:
             mistral_review = self.mistral_api.review_diff(
                 self.diff.diff_content, risk_level
             )
+            mistral_review = mistral_review.replace("\"","\'")
             print(f"DEBUG: Mistral review: {mistral_review}")
             self.diff.mistral_review = mistral_review
 
