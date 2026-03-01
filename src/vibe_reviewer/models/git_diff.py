@@ -1,5 +1,6 @@
 """GitDiff model for handling git diff operations and parsing."""
 
+import logging
 import subprocess
 from typing import Dict, Any
 
@@ -34,7 +35,7 @@ class GitDiff:
             )
             self._parse_diff_stats(diff_result.stdout)
         except subprocess.CalledProcessError as e:
-            print(f"DEBUG: Failed to get git diff: {e}")
+            logging.debug(f"Failed to get git diff: {e}")
             raise
 
     def get_diff_content(self) -> None:
@@ -48,7 +49,7 @@ class GitDiff:
             )
             self.diff_content = result.stdout
         except subprocess.CalledProcessError as e:
-            print(f"DEBUG: Failed to get full diff: {e}")
+            logging.debug(f"Failed to get full diff: {e}")
             raise
 
     def _parse_diff_stats(self, diff_output: str) -> None:

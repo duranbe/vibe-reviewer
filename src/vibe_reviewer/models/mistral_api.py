@@ -1,3 +1,5 @@
+import logging
+
 try:
     from mistralai import Mistral, UserMessage, SystemMessage
 except ImportError:
@@ -39,7 +41,7 @@ class MistralAPI:
             with open(REVIEW_MD, "r") as f:
                 return f.read()
         except FileNotFoundError:
-            print("DEBUG: No review.md found")
+            logging.debug("No review.md found")
             return "You are a code reviewer. Please review the following code changes."
 
     def review_diff(self, diff_content: str, risk_level: str) -> str:
@@ -65,5 +67,5 @@ class MistralAPI:
             else:
                 return str(response)
         except Exception as e:
-            print(f"DEBUG: Mistral API exception: {e}")
+            logging.debug(f"Mistral API exception: {e}")
             return f"API exception: {str(e)}"
