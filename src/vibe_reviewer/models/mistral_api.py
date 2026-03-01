@@ -57,8 +57,8 @@ class MistralAPI:
             with open(REVIEW_MD, "r") as f:
                 return f.read()
         except FileNotFoundError:
-            logging.debug("No review.md found")
-            return "You are a code reviewer. Please review the following code changes."
+            logging.debug("No review.md found, using default system prompt")
+            return DEFAULT_SYSTEM_PROMPT
 
     def review_diff(self, diff_content: str, risk_level: str) -> str:
         """Send diff to Mistral for review."""
