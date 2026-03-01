@@ -17,7 +17,8 @@ except ImportError:
 
     class MockChat:
         def complete(self, model: str, messages: list):
-            return type('obj', (object,), {'choices': []})()
+            return type("obj", (object,), {"choices": []})()
+
 
 REVIEW_MD = "review.md"
 
