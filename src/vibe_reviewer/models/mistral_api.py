@@ -1,4 +1,6 @@
-"""MistralAPI model for handling Mistral API interactions."""
+from mistralai import Mistral, UserMessage, SystemMessage
+
+REVIEW_MD = "review.md"
 
 
 class MistralAPI:
@@ -9,27 +11,21 @@ class MistralAPI:
         self.client = None
 
     def initialize_client(self) -> None:
-        """Initialize the Mistral client."""
-        from mistralai import Mistral
-
         self.client = Mistral(api_key=self.api_key)
 
     def load_system_prompt(self) -> str:
         """Load the system prompt from review.md."""
         try:
-            with open("review.md", "r") as f:
+            with open(REVIEW_MD, "r") as f:
                 return f.read()
         except FileNotFoundError:
-            print("DEBUG: review.md not found")
+            print("DEBUG: No review.md found")
             return "You are a code reviewer. Please review the following code changes."
 
     def review_diff(self, diff_content: str, risk_level: str) -> str:
         """Send diff to Mistral for review."""
         if not self.client:
             self.initialize_client()
-
-        from mistralai import UserMessage, SystemMessage
-
         system_prompt = self.load_system_prompt()
 
         messages = [
