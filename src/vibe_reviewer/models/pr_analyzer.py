@@ -1,6 +1,7 @@
 """PRAnalyzer model for analyzing pull request diffs."""
 
 import json
+import logging
 import os
 from typing import Dict, Any
 
@@ -34,10 +35,10 @@ class PRAnalyzer:
         """Load the GitHub event payload."""
         event_path = os.environ.get("GITHUB_EVENT_PATH", "")
         if not event_path:
-            print("DEBUG: GITHUB_EVENT_PATH not set")
+            logging.debug("GITHUB_EVENT_PATH not set")
             return {"error": "GITHUB_EVENT_PATH not set"}
 
-        print(f"DEBUG: Reading event from {event_path}")
+        logging.debug(f"Reading event from {event_path}")
         with open(event_path, "r") as f:
             event = json.load(f)
 
@@ -48,11 +49,11 @@ class PRAnalyzer:
         base_sha = event.get("pull_request", {}).get("base", {}).get("sha", "")
         head_sha = event.get("pull_request", {}).get("head", {}).get("sha", "")
 
-        print(f"DEBUG: Base SHA: {base_sha}")
-        print(f"DEBUG: Head SHA: {head_sha}")
+        logging.debug(f"Base SHA: {base_sha}")
+        logging.debug(f"Head SHA: {head_sha}")
 
         if not base_sha or not head_sha:
-            print("DEBUG: Could not determine base or head SHA")
+            logging.debug("Could not determine base or head SHA")
             return {"error": "Could not determine base or head SHA"}
 
         diff = GitDiff(base_sha, head_sha)
@@ -64,18 +65,18 @@ class PRAnalyzer:
     def _analyze_diff(self) -> None:
         """Analyze the diff and get Mistral review if available."""
         risk_level = self.diff.determine_risk_level()
-        print(f"DEBUG: Risk level determined: {risk_level}")
+        logging.debug(f"Risk level determined: {risk_level}")
 
         self.diff.get_diff_content()
 
         if os.environ.get("MISTRAL_API_KEY"):
-            print("DEBUG: Sending diff to Mistral API for review")
+            logging.debug("Sending diff to Mistral API for review")
             self.mistral_api = MistralAPI(os.environ.get("MISTRAL_API_KEY"))
             mistral_review = self.mistral_api.review_diff(
                 self.diff.diff_content, risk_level
             )
             mistral_review = mistral_review.replace('"', "'")
-            print(f"DEBUG: Mistral review: {mistral_review}")
+            logging.debug(f"Mistral review: {mistral_review}")
             self.diff.mistral_review = mistral_review
 
     def _build_outputs(self) -> Dict[str, Any]:
