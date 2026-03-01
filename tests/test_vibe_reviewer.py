@@ -28,7 +28,9 @@ def test_analyze_pr_diff():
                 with patch.dict(os.environ, {"GITHUB_EVENT_PATH": "mock_path"}):
                     with patch.dict(os.environ, {"MISTRAL_API_KEY": ""}):
                         # Mock the MistralAPI module
-                        with patch("vibe_reviewer.models.mistral_api.MistralAPI") as mock_mistral_api:
+                        with patch(
+                            "vibe_reviewer.models.mistral_api.MistralAPI"
+                        ) as mock_mistral_api:
                             mock_instance = MagicMock()
                             mock_instance.review_diff.return_value = "Review comment"
                             mock_mistral_api.return_value = mock_instance
