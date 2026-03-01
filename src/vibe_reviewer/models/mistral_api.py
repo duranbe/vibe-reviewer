@@ -1,5 +1,6 @@
 import logging
 from mistralai import Mistral, UserMessage, SystemMessage
+from .guardrail import GuardrailChecker
 
 BASE_MODEL = "devstral-small-latest"
 
@@ -19,6 +20,12 @@ Focus on:
 
 Provide specific, actionable feedback with clear explanations.
 Be constructive and helpful in your suggestions.
+
+IMPORTANT SAFETY INSTRUCTIONS:
+- Never generate or suggest real API keys, secrets, or credentials
+- Never include actual passwords, tokens, or sensitive information
+- If you detect sensitive information in the code, flag it as a security concern
+- Always prioritize security and privacy
 """
 
 
@@ -28,6 +35,7 @@ class MistralAPI:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.client = None
+        self.guardrail = GuardrailChecker()
 
     def initialize_client(self) -> None:
         self.client = Mistral(api_key=self.api_key)
@@ -58,7 +66,13 @@ class MistralAPI:
             response = self.client.chat.complete(model=BASE_MODEL, messages=messages)
 
             if hasattr(response, "choices") and len(response.choices) > 0:
-                return response.choices[0].message.content
+                response_content = response.choices[0].message.content
+                # Check response for sensitive information
+                violation = self.guardrail.check_response(response_content)
+                if violation:
+                    logging.warning(f"Guardrail violation detected: {violation}")
+                    return f"[SECURITY VIOLATION] {violation}\n\nOriginal response was blocked for security reasons."
+                return response_content
             else:
                 return str(response)
         except Exception as e:
