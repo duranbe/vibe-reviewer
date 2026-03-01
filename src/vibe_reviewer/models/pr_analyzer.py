@@ -116,7 +116,7 @@ class PRAnalyzer:
 
         # Build comment body
         comment_body = (
-            f"🎯 Vibe Review: **{outputs['risk-level']}** risk\n\n"
+            f"Vibe Review: **{outputs['risk-level']}** risk\n\n"
             f"- Files changed: {outputs['files-changed']}\n"
             f"- Lines added: {outputs['total-additions']}\n"
             f"- Lines deleted: {outputs['total-deletions']}\n"
@@ -128,7 +128,7 @@ class PRAnalyzer:
             decoded_message = (
                 outputs["message"].replace("%0A", "\n").replace("%0D", "\r")
             )
-            comment_body += f"\n\n🤖 **AI Review:**\n\n{decoded_message}"
+            comment_body += f"\n\n**AI Review:**\n\n{decoded_message}"
 
         # Post comment using GitHub API
         GitHubAPI.post_comment(

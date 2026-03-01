@@ -116,13 +116,13 @@ The changes look good overall with minor improvements suggested.
 ### Detailed Feedback
 
 **File: `src/main.py`**
-- ✅ Good use of type hints
-- ⚠️ Consider adding error handling for file operations
-- 📝 Add docstring for the `process_data` function
+- Good use of type hints
+- Consider adding error handling for file operations
+- Add docstring for the `process_data` function
 
 **File: `tests/test_main.py`**
-- ✅ Comprehensive test coverage
-- 📝 Add test for edge case: empty input
+- Comprehensive test coverage
+- Add test for edge case: empty input
 ```
 
 ## Contributing
