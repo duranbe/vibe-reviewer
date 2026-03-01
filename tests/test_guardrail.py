@@ -1,6 +1,6 @@
 """Tests for the guardrail checker."""
 import pytest
-from src.vibe_reviewer.models.guardrail import GuardrailChecker
+from vibe_reviewer.models.guardrail import GuardrailChecker
 
 
 def test_guardrail_detects_aws_key():
