@@ -14,7 +14,7 @@ jobs:
       - name: Install uv
         run: pip install uv
       - name: Install dependencies
-        run: uv pip install --system --no-deps -e . && uv pip install --system pytest black ruff
+        run: uv pip install --system -e . && uv pip install --system pytest black ruff
       - name: Run tests
         run: pytest tests/
       - name: Run linters

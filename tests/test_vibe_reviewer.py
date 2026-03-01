@@ -1,7 +1,7 @@
 """Tests for the vibe_reviewer module."""
 
 import os
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch, mock_open
 from vibe_reviewer import analyze_pr_diff, set_outputs
 from vibe_reviewer.models.mistral_api import MistralAPI, DEFAULT_SYSTEM_PROMPT
 
@@ -27,14 +27,12 @@ def test_analyze_pr_diff():
                 mock_run.return_value.check_returncode.return_value = None
 
                 with patch.dict(os.environ, {"GITHUB_EVENT_PATH": "mock_path"}):
-                    with patch.dict(os.environ, {"MISTRAL_API_KEY": ""}):
-                        # Mock the MistralAPI module
+                    with patch.dict(os.environ, {"MISTRAL_API_KEY": "test_key"}):
+                        # Mock the MistralAPI class methods without affecting the real class
                         with patch(
-                            "vibe_reviewer.models.mistral_api.MistralAPI"
-                        ) as mock_mistral_api:
-                            mock_instance = MagicMock()
-                            mock_instance.review_diff.return_value = "Review comment"
-                            mock_mistral_api.return_value = mock_instance
+                            "vibe_reviewer.models.mistral_api.MistralAPI.review_diff"
+                        ) as mock_review_diff:
+                            mock_review_diff.return_value = "Review comment"
 
                             result = analyze_pr_diff()
 
@@ -43,6 +41,7 @@ def test_analyze_pr_diff():
                             assert result["has-tests"] == "true"
                             assert result["total-additions"] == 30
                             assert result["total-deletions"] == 15
+                            assert result["message"] == "Review comment"
 
 
 def test_set_outputs():
