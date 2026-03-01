@@ -1,6 +1,8 @@
 import logging
 from mistralai import Mistral, UserMessage, SystemMessage
 
+BASE_MODEL = "devstral-small-latest"
+
 REVIEW_MD = "review.md"
 
 DEFAULT_SYSTEM_PROMPT = """
@@ -53,9 +55,7 @@ class MistralAPI:
         ]
 
         try:
-            response = self.client.chat.complete(
-                model="devstral-small-latest", messages=messages
-            )
+            response = self.client.chat.complete(model=BASE_MODEL, messages=messages)
 
             if hasattr(response, "choices") and len(response.choices) > 0:
                 return response.choices[0].message.content
