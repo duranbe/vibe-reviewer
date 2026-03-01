@@ -1,8 +1,6 @@
 import logging
 from mistralai import Mistral, UserMessage, SystemMessage
 
-
-
 REVIEW_MD = "review.md"
 
 DEFAULT_SYSTEM_PROMPT = """
