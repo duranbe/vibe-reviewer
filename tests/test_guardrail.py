@@ -1,5 +1,5 @@
 """Tests for the guardrail checker."""
-import pytest
+
 from vibe_reviewer.models.guardrail import GuardrailChecker
 
 
@@ -41,13 +41,13 @@ def test_guardrail_no_matches():
 def test_guardrail_check_response():
     """Test the check_response method."""
     checker = GuardrailChecker()
-    
+
     # Test with sensitive data
     response = "Here's a key: AKIAIOSFODNN7EXAMPLE"
     result = checker.check_response(response)
     assert result is not None
     assert "Sensitive information detected" in result
-    
+
     # Test with clean data
     response = "This is a clean response"
     result = checker.check_response(response)
@@ -58,7 +58,7 @@ def test_custom_pattern():
     """Test adding custom patterns."""
     checker = GuardrailChecker()
     checker.add_custom_pattern("Test Pattern", r"test_[0-9]{5}")
-    
+
     text = "Here's a test: test_12345"
     matches = checker.check_text(text)
     assert len(matches) == 1
