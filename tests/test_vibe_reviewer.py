@@ -1,7 +1,7 @@
 """Tests for the vibe_reviewer module."""
 
 import os
-from unittest.mock import patch, mock_open, MagicMock, PropertyMock
+from unittest.mock import patch, mock_open
 from vibe_reviewer import analyze_pr_diff, set_outputs
 from vibe_reviewer.models.mistral_api import MistralAPI, DEFAULT_SYSTEM_PROMPT
 
