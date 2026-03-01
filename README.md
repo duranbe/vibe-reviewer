@@ -22,6 +22,7 @@
 - **Context-Aware Analysis**: Understands code changes in context
 - **Customizable**: Configure review depth and focus areas
 - **Lightweight**: Easy to set up and use
+- **Security Guardrails**: Built-in protection against information leakage with comprehensive regex pattern matching
 
 ## Installation
 
@@ -142,6 +143,31 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Support
 
 For issues or questions, please open an issue on GitHub.
+
+## Security
+
+### Guardrails
+
+Vibe Reviewer includes comprehensive security guardrails to prevent information leakage:
+
+- **Automated Pattern Detection**: Uses regex patterns from [truffleHogRegexes](https://github.com/dxa4481/truffleHogRegexes) to detect sensitive information
+- **Response Filtering**: All AI responses are scanned for sensitive data before being returned
+- **Safety Instructions**: System prompt includes explicit instructions to never generate or suggest real API keys, secrets, or credentials
+- **Supported Patterns**:
+  - API keys (AWS, Google, GitHub, Slack, etc.)
+  - Private keys (RSA, SSH, PGP)
+  - OAuth tokens
+  - Passwords in URLs
+  - And many more security-sensitive patterns
+
+If sensitive information is detected in an AI response, it will be blocked and a security violation notice will returned instead.
+
+### Best Practices
+
+- Never commit API keys or secrets to your repository
+- Use GitHub Secrets for sensitive configuration
+- Review AI-generated code carefully before merging
+- Keep your Mistral API key secure
 
 ## Disclaimer
 
