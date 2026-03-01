@@ -26,13 +26,14 @@ def test_analyze_pr_diff():
                 mock_run.return_value.check_returncode.return_value = None
 
                 with patch.dict(os.environ, {"GITHUB_EVENT_PATH": "mock_path"}):
-                    result = analyze_pr_diff()
+                    with patch.dict(os.environ, {"MISTRAL_API_KEY": ""}):
+                        result = analyze_pr_diff()
 
-                    assert result["risk-level"] == "LOW"
-                    assert result["files-changed"] == 2
-                    assert result["has-tests"] == "true"
-                    assert result["total-additions"] == 30
-                    assert result["total-deletions"] == 15
+                        assert result["risk-level"] == "LOW"
+                        assert result["files-changed"] == 2
+                        assert result["has-tests"] == "true"
+                        assert result["total-additions"] == 30
+                        assert result["total-deletions"] == 15
 
 
 def test_set_outputs():
