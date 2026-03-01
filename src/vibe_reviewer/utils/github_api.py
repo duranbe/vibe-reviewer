@@ -59,5 +59,10 @@ class GitHubAPI:
             )
             return True
         except requests.exceptions.RequestException as e:
-            logging.error(f"Failed to post comment: {e}")
+            error_message = f"Failed to post comment: {e}"
+            if "response" in locals() and hasattr(response, "text") and response.text:
+                error_message += f"\nResponse body: {response.text}"
+            if "response" in locals():
+                error_message += f"\nStatus code: {response.status_code}"
+            logging.error(error_message)
             return False
