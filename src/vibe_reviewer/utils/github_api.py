@@ -33,7 +33,9 @@ class GitHubAPI:
         if token is None:
             token = os.environ.get("GITHUB_TOKEN")
             if token is None:
-                logging.error("No GitHub token provided and GITHUB_TOKEN not set in environment")
+                logging.error(
+                    "No GitHub token provided and GITHUB_TOKEN not set in environment"
+                )
                 return False
 
         # GitHub API endpoint
@@ -52,7 +54,9 @@ class GitHubAPI:
         try:
             response = requests.post(url, headers=headers, json=payload)
             response.raise_for_status()
-            logging.info(f"Successfully posted comment to {owner}/{repo}#{issue_number}")
+            logging.info(
+                f"Successfully posted comment to {owner}/{repo}#{issue_number}"
+            )
             return True
         except requests.exceptions.RequestException as e:
             logging.error(f"Failed to post comment: {e}")

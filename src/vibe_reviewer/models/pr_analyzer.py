@@ -125,7 +125,9 @@ class PRAnalyzer:
 
         # Add AI review message if available
         if "message" in outputs:
-            decoded_message = outputs["message"].replace("%0A", "\n").replace("%0D", "\r")
+            decoded_message = (
+                outputs["message"].replace("%0A", "\n").replace("%0D", "\r")
+            )
             comment_body += f"\n\n🤖 **AI Review:**\n\n{decoded_message}"
 
         # Post comment using GitHub API
