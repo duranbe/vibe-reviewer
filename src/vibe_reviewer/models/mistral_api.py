@@ -1,4 +1,23 @@
-from mistralai import Mistral, UserMessage, SystemMessage
+try:
+    from mistralai import Mistral, UserMessage, SystemMessage
+except ImportError:
+    # Mock classes for testing when mistralai is not installed
+    class Mistral:
+        def __init__(self, api_key: str):
+            self.api_key = api_key
+            self.chat = MockChat()
+
+    class UserMessage:
+        def __init__(self, content: str):
+            self.content = content
+
+    class SystemMessage:
+        def __init__(self, content: str):
+            self.content = content
+
+    class MockChat:
+        def complete(self, model: str, messages: list):
+            return type('obj', (object,), {'choices': []})()
 
 REVIEW_MD = "review.md"
 
