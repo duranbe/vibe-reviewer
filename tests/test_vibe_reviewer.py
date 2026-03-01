@@ -55,7 +55,7 @@ def test_set_outputs():
 
 
 def test_default_system_prompt():
-    """Test that the default system prompt is used when review.md is not found."""
+    """Test that the default system prompt is used when REVIEW.MD is not found."""
     api = MistralAPI("test_key")
 
     # Mock the file not found scenario
@@ -65,7 +65,7 @@ def test_default_system_prompt():
 
 
 def test_custom_system_prompt():
-    """Test that a custom system prompt is loaded from review.md when available."""
+    """Test that a custom system prompt is loaded from REVIEW.MD when available."""
     api = MistralAPI("test_key")
     custom_prompt = "Custom prompt for testing"
 

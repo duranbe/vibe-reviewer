@@ -53,7 +53,7 @@
 
 ### Basic Usage
 
-1. **Create a `review.md` file** in your repository root with your review instructions:
+1. **Create a `REVIEW.MD` file** in your repository root with your review instructions:
    ```markdown
    # Review Instructions
    
@@ -84,7 +84,7 @@ python -m vibe_reviewer --pr-number 123 --repo-owner yourusername --repo-name yo
 
 ### Customizing Reviews
 
-Create or modify the `review.md` file in your repository root to specify what aspects of the code you want reviewed. Example:
+Create or modify the `REVIEW.MD` file in your repository root to specify what aspects of the code you want reviewed. Example:
 
 ```markdown
 # Review Instructions

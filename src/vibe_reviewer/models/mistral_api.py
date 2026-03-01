@@ -4,7 +4,7 @@ from .guardrail import GuardrailChecker
 
 BASE_MODEL = "devstral-small-latest"
 
-REVIEW_MD = "review.md"
+REVIEW_MD = "REVIEW.MD"
 
 DEFAULT_SYSTEM_PROMPT = """
 You are a senior code reviewer with extensive experience in software development.
@@ -41,12 +41,12 @@ class MistralAPI:
         self.client = Mistral(api_key=self.api_key)
 
     def load_system_prompt(self) -> str:
-        """Load the system prompt from review.md."""
+        """Load the system prompt from REVIEW.MD."""
         try:
             with open(REVIEW_MD, "r") as f:
                 return f.read()
         except FileNotFoundError:
-            logging.debug("No review.md found, using default system prompt")
+            logging.debug("No REVIEW.MD found, using default system prompt")
             return DEFAULT_SYSTEM_PROMPT
 
     def review_diff(self, diff_content: str, risk_level: str) -> str:
