@@ -76,13 +76,13 @@ class GitDiff:
     def determine_risk_level(self) -> str:
         """Determine risk level based on diff statistics."""
         if (
-            self.files_changed <= 5
-            and self.total_additions + self.total_deletions <= 50
+            self.files_changed <= 10
+            and self.total_additions + self.total_deletions <= 80
         ):
             return "LOW"
         elif (
-            self.files_changed <= 15
-            and self.total_additions + self.total_deletions <= 200
+            self.files_changed <= 25
+            and self.total_additions + self.total_deletions <= 150
         ):
             return "MEDIUM"
         else:
