@@ -1,5 +1,6 @@
 """GitHub Actions utilities for handling outputs."""
 
+import logging
 import os
 from typing import Dict, Any
 
@@ -12,11 +13,11 @@ class GitHubActionsOutput:
         """Set GitHub Actions outputs."""
         github_output = os.environ.get("GITHUB_OUTPUT", "")
         if not github_output:
-            print("DEBUG: GITHUB_OUTPUT not set, skipping output writing")
+            logging.debug("GITHUB_OUTPUT not set, skipping output writing")
             return
 
-        print(f"DEBUG: Writing outputs to {github_output}")
-        print(f"DEBUG: Outputs: {outputs}")
+        logging.debug(f"Writing outputs to {github_output}")
+        logging.debug(f"Outputs: {outputs}")
 
         with open(github_output, "a") as f:
             for key, value in outputs.items():
@@ -25,4 +26,4 @@ class GitHubActionsOutput:
                     f.write(f"{key}={escaped_value}\n")
                 else:
                     f.write(f"{key}={value}\n")
-        print("DEBUG: Outputs written successfully")
+        logging.debug("Outputs written successfully")
