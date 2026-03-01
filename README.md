@@ -149,4 +149,8 @@ For issues or questions, please open an issue on GitHub.
 ## Disclaimer
 
 This tool is not affiliated with Mistral AI. Use at your own risk.
+
+## Hackathon
+
+This project was created during the **Mistral Hackathon 2026** as an innovative approach to AI-powered code reviews.
 =======
