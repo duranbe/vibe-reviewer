@@ -9,6 +9,13 @@
   \_____|_| |_|\__,_|_| |_|\__(_)
 ```
 
+```
+  /\___/
+ (  o.o  )
+  > ^ <
+  VIBE REVIEWER
+```
+
 **Vibe Reviewer** is an AI-powered code review tool that leverages Mistral's advanced language models to provide intelligent, context-aware feedback on your pull requests.
 
 ## Features
