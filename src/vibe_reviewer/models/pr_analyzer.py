@@ -7,6 +7,7 @@ from typing import Dict, Any
 
 from ..models.git_diff import GitDiff
 from ..models.mistral_api import MistralAPI
+from ..utils.github_api import GitHubAPI
 
 
 class PRAnalyzer:
@@ -80,7 +81,7 @@ class PRAnalyzer:
             self.diff.mistral_review = mistral_review
 
     def _build_outputs(self) -> Dict[str, Any]:
-        """Build the outputs dictionary."""
+        """Build the outputs dictionary and post comment to PR."""
         outputs = {
             "risk-level": self.diff.determine_risk_level(),
             "files-changed": self.diff.files_changed,
@@ -92,4 +93,45 @@ class PRAnalyzer:
         if hasattr(self.diff, "mistral_review"):
             outputs["message"] = self.diff.mistral_review
 
+        # Post comment to PR if this is a pull request event
+        self._post_pr_comment(outputs)
+
         return outputs
+
+    def _post_pr_comment(self, outputs: Dict[str, Any]) -> None:
+        """Post a comment to the PR using GitHub API."""
+        event = self._load_event()
+        if not isinstance(event, dict) or "pull_request" not in event:
+            logging.debug("Not a pull request event, skipping comment")
+            return
+
+        # Extract PR information
+        pr_number = event.get("pull_request", {}).get("number")
+        owner = event.get("repository", {}).get("owner", {}).get("login")
+        repo = event.get("repository", {}).get("name")
+
+        if not all([pr_number, owner, repo]):
+            logging.debug("Missing PR information, skipping comment")
+            return
+
+        # Build comment body
+        comment_body = (
+            f"🎯 Vibe Review: **{outputs['risk-level']}** risk\n\n"
+            f"- Files changed: {outputs['files-changed']}\n"
+            f"- Lines added: {outputs['total-additions']}\n"
+            f"- Lines deleted: {outputs['total-deletions']}\n"
+            f"- Tests included: {outputs['has-tests']}"
+        )
+
+        # Add AI review message if available
+        if "message" in outputs:
+            decoded_message = outputs["message"].replace("%0A", "\n").replace("%0D", "\r")
+            comment_body += f"\n\n🤖 **AI Review:**\n\n{decoded_message}"
+
+        # Post comment using GitHub API
+        GitHubAPI.post_comment(
+            owner=owner,
+            repo=repo,
+            issue_number=pr_number,
+            comment_body=comment_body,
+        )

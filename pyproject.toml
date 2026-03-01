@@ -5,6 +5,7 @@ description = "A simple Python project for GitHub Actions"
 authors = [{name = "Mistral Vibe", email = "vibe@mistral.ai"}]
 dependencies = [
     "mistralai>=1.5.2",
+    "requests>=2.31.0",
 ]
 requires-python = ">=3.8"
 
