@@ -1,3 +1,5 @@
+import logging
+
 try:
     from mistralai import Mistral, UserMessage, SystemMessage
 except ImportError:
@@ -22,6 +24,22 @@ except ImportError:
 
 REVIEW_MD = "review.md"
 
+DEFAULT_SYSTEM_PROMPT = """
+You are a senior code reviewer with extensive experience in software development.
+Please analyze the following code changes and provide a comprehensive review.
+
+Focus on:
+1. Code quality and best practices
+2. Potential bugs or issues
+3. Security concerns
+4. Performance implications
+5. Readability and maintainability
+6. Testing considerations
+
+Provide specific, actionable feedback with clear explanations.
+Be constructive and helpful in your suggestions.
+"""
+
 
 class MistralAPI:
     """Class to handle Mistral API interactions."""
@@ -39,8 +57,8 @@ class MistralAPI:
             with open(REVIEW_MD, "r") as f:
                 return f.read()
         except FileNotFoundError:
-            print("DEBUG: No review.md found")
-            return "You are a code reviewer. Please review the following code changes."
+            logging.debug("No review.md found, using default system prompt")
+            return DEFAULT_SYSTEM_PROMPT
 
     def review_diff(self, diff_content: str, risk_level: str) -> str:
         """Send diff to Mistral for review."""

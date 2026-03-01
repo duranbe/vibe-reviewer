@@ -3,6 +3,7 @@
 import os
 from unittest.mock import patch, mock_open, MagicMock
 from vibe_reviewer import analyze_pr_diff, set_outputs
+from vibe_reviewer.models.mistral_api import MistralAPI, DEFAULT_SYSTEM_PROMPT
 
 
 def test_analyze_pr_diff():
@@ -52,3 +53,25 @@ def test_set_outputs():
         with patch("builtins.open", mock_open()) as mock_file:
             set_outputs(mock_outputs)
             mock_file.assert_called_once_with("test_output", "a")
+
+
+def test_default_system_prompt():
+    """Test that the default system prompt is used when review.md is not found."""
+    api = MistralAPI("test_key")
+
+    # Mock the file not found scenario
+    with patch("builtins.open", side_effect=FileNotFoundError):
+        prompt = api.load_system_prompt()
+        assert prompt == DEFAULT_SYSTEM_PROMPT
+
+
+def test_custom_system_prompt():
+    """Test that a custom system prompt is loaded from review.md when available."""
+    api = MistralAPI("test_key")
+    custom_prompt = "Custom prompt for testing"
+
+    # Mock the file read scenario
+    m = mock_open(read_data=custom_prompt)
+    with patch("builtins.open", m):
+        prompt = api.load_system_prompt()
+        assert prompt == custom_prompt
