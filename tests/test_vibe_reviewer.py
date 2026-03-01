@@ -1,7 +1,7 @@
 """Tests for the vibe_reviewer module."""
 
 import os
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, MagicMock
 from vibe_reviewer import analyze_pr_diff, set_outputs
 
 
@@ -27,13 +27,19 @@ def test_analyze_pr_diff():
 
                 with patch.dict(os.environ, {"GITHUB_EVENT_PATH": "mock_path"}):
                     with patch.dict(os.environ, {"MISTRAL_API_KEY": ""}):
-                        result = analyze_pr_diff()
+                        # Mock the MistralAPI module
+                        with patch("vibe_reviewer.models.mistral_api.MistralAPI") as mock_mistral_api:
+                            mock_instance = MagicMock()
+                            mock_instance.review_diff.return_value = "Review comment"
+                            mock_mistral_api.return_value = mock_instance
 
-                        assert result["risk-level"] == "LOW"
-                        assert result["files-changed"] == 2
-                        assert result["has-tests"] == "true"
-                        assert result["total-additions"] == 30
-                        assert result["total-deletions"] == 15
+                            result = analyze_pr_diff()
+
+                            assert result["risk-level"] == "LOW"
+                            assert result["files-changed"] == 2
+                            assert result["has-tests"] == "true"
+                            assert result["total-additions"] == 30
+                            assert result["total-deletions"] == 15
 
 
 def test_set_outputs():
